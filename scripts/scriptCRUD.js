@@ -18,28 +18,24 @@ btnGet1.addEventListener("click", async () => {
     }
 });
 
-
-
 function showData(data) {    
     if (!inputGet1Id.value) {
+        results.innerHTML = "";
         for (const datos of data) {
-            results.innerHTML += `<p>Nombre: ${datos.name} <br>Apellido: ${datos.lastname} <br> ID: ${datos.id} `;            
+            results.innerHTML += `<p>Nombre: ${datos.name} <br>Apellido: ${datos.lastname} <br> ID: ${datos.id} </p>`;            
         }        
-    } else if(inputGet1Id.value) {
+    } else {
+        let encontrado = false;
         for (const datos of data) {
             if (datos.id===inputGet1Id.value) {                
-                results.innerHTML += `<p>Nombre: ${datos.name} <br>Apellido: ${datos.lastname} <br> ID: ${datos.id} `;
-            }            
+                results.innerHTML = `<p>Nombre: ${datos.name} <br>Apellido: ${datos.lastname} <br> ID: ${datos.id} </p>`;
+                encontrado = true;
+            }    
+        }
+        if (!encontrado) {
+            results.innerHTML = `<p> Usuario no encontrado </p>`;
         }
     }    
-}
-
-
-
-const get = async (id = "")  => {
-    const response = await fetch(SERVER_MOCK + GET + id)
-    const data = await response.json()
-    return data
 }
 
 const post = async (data) => {
