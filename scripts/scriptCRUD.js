@@ -4,6 +4,38 @@ const POST = "/users"
 const PUT = "/users/"
 const DELETE = "/users/"
 
+const btnGet1 = document.getElementById("btnGet1");
+const results = document.getElementById("results");
+const inputGet1Id = document.getElementById("inputGet1Id");
+
+btnGet1.addEventListener("click", async () => {
+    try {
+        const response = await fetch(SERVER_MOCK + GET);
+        const data = await response.json();
+        showData(data);          
+    } catch (error) {
+        alert("Ocurrió un error");
+    }
+});
+
+
+
+function showData(data) {    
+    if (!inputGet1Id.value) {
+        for (const datos of data) {
+            results.innerHTML += `<p>Nombre: ${datos.name} <br>Apellido: ${datos.lastname} <br> ID: ${datos.id} `;            
+        }        
+    } else if(inputGet1Id.value) {
+        for (const datos of data) {
+            if (datos.id===inputGet1Id.value) {                
+                results.innerHTML += `<p>Nombre: ${datos.name} <br>Apellido: ${datos.lastname} <br> ID: ${datos.id} `;
+            }            
+        }
+    }    
+}
+
+
+
 const get = async (id = "")  => {
     const response = await fetch(SERVER_MOCK + GET + id)
     const data = await response.json()
