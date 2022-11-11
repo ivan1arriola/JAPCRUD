@@ -4,6 +4,23 @@ const POST = "/users"
 const PUT = "/users/"
 const DELETE = "/users/"
 
+const showAlert = (message) => {
+    const bsAlert = document.createElement("div")
+    bsAlert.classList.add("alert", "alert-danger", "alert-dismissible", "fade", "show")
+    bsAlert.setAttribute("role", "alert")
+    bsAlert.innerHTML = message
+    const button = document.createElement("button")
+    button.classList.add("btn-close")
+    button.setAttribute("type", "button")
+    button.setAttribute("data-bs-dismiss", "alert")
+    button.setAttribute("aria-label", "Close")
+    bsAlert.appendChild(button)
+    document.body.appendChild(bsAlert)
+}
+
+
+// Metodo Get
+
 const btnGet1 = document.getElementById("btnGet1"); //Get
 const results = document.getElementById("results");
 const inputGet1Id = document.getElementById("inputGet1Id");
@@ -14,11 +31,12 @@ btnGet1.addEventListener("click", async () => {
         const data = await response.json();
         showData(data);
     } catch (error) {
-        alert("Ocurrió un error");
+        showAlert("Ocurrió un error");
     }
 });
 
 // Metodo Post
+
 const btnPost = document.getElementById("btnPost");
 const postBox = document.getElementById("post-box")
 const inputPostNombre = document.getElementById("inputPostNombre");
@@ -52,14 +70,14 @@ const addUser = async (newUser) => {
         const data = await response.json();
         console.log(response);
     } catch (error) {
-        alert("Ocurrió un error");
+        showAlert("Ocurrió un error");
         console.log(error);
     }
 }
 
 // Metodo Put
 
-const showModalPut = document.getElementById("btnPut");
+const btnModalPut = document.getElementById("btnPut");
 const putBox = document.getElementById("put-box")
 const inputPutId = document.getElementById("inputPutId");
 
@@ -68,24 +86,31 @@ const inputPutNombre = document.getElementById("inputPutNombre");
 const inputPutApellido = document.getElementById("inputPutApellido");
 const btnSendChanges = document.getElementById("btnSendChanges");
 
+// Habilita o desabilita el boton Modal Put
 putBox.addEventListener("change", async() => {
     if (inputPutId.value) {
-        const id = inputPutId.value;
-        const response = await fetch(SERVER_MOCK + GET + id);
-        const data = await response.json();
-        if(data.id) showModalPut.disabled = false;
-        else showModalPut.disabled = true;
+       btnModalPut.disabled = false;
     } else {
-        showModalPut.disabled = true;
+        btnModalPut.disabled = true;
     }
 });
 
-showModalPut.addEventListener("click", async () => {
+btnModalPut.addEventListener("click", async () => {
     const id = inputPutId.value;
     const response = await fetch(SERVER_MOCK + GET + id);
     const data = await response.json();
-    inputPutNombre.value = data.name;
-    inputPutApellido.value = data.lastname;
+    if(data.id){
+        inputPutNombre.value = data.name;
+        inputPutApellido.value = data.lastname;
+        dataModal.classList.add("show");
+        const myModal = new bootstrap.Modal('#dataModal', {
+            keyboard: false
+          })
+        myModal.show();
+          
+    } else {
+        showAlert("No existe el usuario");
+    }
 });
 
 dataModal.addEventListener("change", () => {
@@ -114,7 +139,7 @@ btnSendChanges.addEventListener("click", async () => {
         const data = await response.json();
         console.log(response);
     } catch (error) {
-        alert("Ocurrió un error");
+        showAlert("Ocurrió un error");
         console.log(error);
     }
 });
@@ -142,9 +167,13 @@ btnDelete.addEventListener("click", async () => {
             method: "DELETE",
         });
         const data = await response.json();
-        console.log(response);
+        if (response.status === 200) {
+            showAlert("Usuario eliminado");
+        } else {
+            showAlert("No existe el usuario");
+        }
     } catch (error) {
-        alert("Ocurrió un error");
+        showAlert("Ocurrió un error");
         console.log(error);
     }
 });
@@ -168,36 +197,4 @@ function showData(data) {
             results.innerHTML = `<p> Usuario no encontrado </p>`;
         }
     }
-}
-
-const post = async (data) => {
-    const response = await fetch(SERVER_MOCK + POST, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    const result = await response.json()
-    return result
-}
-
-const put = async (id, data) => {
-    const response = await fetch(SERVER_MOCK + PUT + id, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    const result = await response.json()
-    return result
-}
-
-const remove = async (id) => {
-    const response = await fetch(SERVER_MOCK + DELETE + id, {
-        method: "DELETE"
-    })
-    const result = await response.json()
-    return result
 }
